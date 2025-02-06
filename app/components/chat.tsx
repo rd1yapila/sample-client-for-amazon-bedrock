@@ -379,7 +379,45 @@ export function DocumentsList(props: {
       ...(await new Promise<string[]>((res, rej) => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
-        fileInput.accept = "application/pdf,.csv,.txt,.md,.docx,doc,.xlsx,xls,";
+        fileInput.accept = [
+          // 文档类
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/rtf",
+          ".txt",
+          ".md",
+          
+          // 代码文件
+          ".js",
+          ".py",
+          ".html",
+          ".cs",
+          ".java",
+          ".go",
+          ".php",
+          ".css",
+          ".ts",
+          ".tsx",
+          ".jsx",
+          ".sh",
+          ".bat",
+          
+          // 配置文件
+          ".xml",
+          ".yml",
+          ".yaml",
+          ".toml",
+          ".ini",
+          ".cfg",
+          ".conf",
+          ".json",
+          
+          // 数据文件
+          ".csv"
+        ].join(",");
         fileInput.multiple = false;
         fileInput.onchange = (event: any) => {
           const files = event.target.files;
