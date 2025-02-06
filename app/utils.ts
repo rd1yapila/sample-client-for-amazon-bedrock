@@ -493,7 +493,45 @@ async function calculateSHA1(input: string): Promise<string> {
 }
 
 function checkFileExtension(extName: string): boolean {
-  const allowedExtensions = ['pdf', 'csv', 'doc', 'docx', 'xls', 'xlsx', 'html', 'txt', 'md'];
+  const allowedExtensions = [
+    // 文档类文件
+    'pdf', 
+    'doc', 
+    'docx', 
+    'xls', 
+    'xlsx',
+    'txt',
+    'md',
+    'rtf',
+    
+    // 代码文件
+    'js',
+    'py',
+    'html',
+    'cs',
+    'java',
+    'go',
+    'php',
+    'css',
+    'ts',
+    'tsx',
+    'jsx',
+    'sh',
+    'bat',
+    
+    // 配置文件
+    'xml',
+    'yml',
+    'yaml',
+    'toml',
+    'ini',
+    'cfg',
+    'conf',
+    'json',
+    
+    // 数据文件
+    'csv'
+  ];
   return allowedExtensions.includes(extName.toLowerCase())
 }
 
