@@ -94,18 +94,57 @@ class BedrockClient {
     return this.client.send(command);
   }
 
-  async invokeModel(payload: any, modelId: string) {
-    const input = {
-      body: JSON.stringify(payload),
+  async invokeModel(params: {
+    modelId: string;
+    input: Record<string, any>;
+  }) {
+    const command = new InvokeModelCommand({
+      modelId: params.modelId,
+      body: JSON.stringify(params.input),
       contentType: "application/json",
       accept: "application/json",
-      modelId,
-    };
+    });
 
-    const command = new InvokeModelCommand(input);
-    return this.client.send(command);
+    const response = await this.client.send(command);
+    return JSON.parse(new TextDecoder().decode(response.body));
   }
 
+  async invokeModelStream(params: {
+    modelId: string;
+    input: Record<string, any>;
+  }) {
+    const command = new InvokeModelWithResponseStreamCommand({
+      modelId: params.modelId,
+      body: JSON.stringify(params.input),
+      contentType: "application/json",
+      accept: "application/json",
+    });
+
+    const response = await this.client.send(command);
+    return this.processStream(response.body);
+  }
+
+  private async *processStream(stream: ReadableStream) {
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        try {
+          yield JSON.parse(chunk);
+        } catch (e) {
+          yield chunk;
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  }
+  
   async converseModel(payload: ConverseCommandInput) {
     console.log("Converse invoke")
      // Create a command with payload.
