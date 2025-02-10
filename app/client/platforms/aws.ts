@@ -302,6 +302,10 @@ export class ClaudeApi implements LLMApi {
 
           const response = await client.invokeModelWithResponseStream(payload);
 
+          if (!response.body) {
+            throw new Error("Response body is undefined");
+          }
+          
           for await (const chunk of response.body) {
             if (chunk.chunk?.bytes) {
               const jsonString = new TextDecoder().decode(chunk.chunk.bytes);
