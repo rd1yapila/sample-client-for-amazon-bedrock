@@ -131,23 +131,19 @@ class BedrockClient {
   }
 
   private async *processStream(stream: AsyncIterable<ResponseStream>) {
-    const reader = stream.getReader();
     const decoder = new TextDecoder();
-
+  
     try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        try {
-          yield JSON.parse(chunk);
-        } catch (e) {
-          yield chunk;
+      for await (const chunk of stream) {
+        // 假设 chunk.body 是 Uint8Array
+        if (chunk.body) {
+          const decoded = decoder.decode(chunk.body, { stream: true });
+          yield decoded;
         }
       }
-    } finally {
-      reader.releaseLock();
+    } catch (error) {
+      console.error('Error processing stream:', error);
+      throw error;
     }
   }
   
