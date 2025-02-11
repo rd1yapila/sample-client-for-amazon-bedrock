@@ -6,7 +6,8 @@ import {
   InvokeModelCommand,
   ConverseCommand,
   ConverseStreamCommand,
-  ConverseCommandInput
+  ConverseCommandInput,
+  ResponseStream
 } from "@aws-sdk/client-bedrock-runtime"; // ES Modules import
 import { STS } from "@aws-sdk/client-sts";
 
