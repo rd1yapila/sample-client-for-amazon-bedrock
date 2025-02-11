@@ -130,15 +130,25 @@ class BedrockClient {
     return this.processStream(response.body);
   }
 
-  private async *processStream(stream: AsyncIterable<ResponseStream>) {
+  interface StreamResponse {
+    completion?: string;
+    usage?: any;  // 根据实际需要定义具体类型
+  }
+  
+  private async *processStream(stream: AsyncIterable<ResponseStream>): AsyncGenerator<StreamResponse> {
     const decoder = new TextDecoder();
   
     try {
       for await (const chunk of stream) {
-        // 假设 chunk.body 是 Uint8Array
         if (chunk.body) {
           const decoded = decoder.decode(chunk.body, { stream: true });
-          yield decoded;
+          try {
+            const parsedChunk = JSON.parse(decoded);
+            yield parsedChunk;
+          } catch (e) {
+            console.error('Error parsing chunk:', e);
+            // 如果解析失败，可以选择跳过这个chunk或者以其他方式处理
+          }
         }
       }
     } catch (error) {
