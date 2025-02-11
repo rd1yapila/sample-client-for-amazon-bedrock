@@ -124,7 +124,7 @@ class BedrockClient {
     return this.processStream(response.body);
   }
 
-  private async *processStream(stream: ReadableStream) {
+  private async *processStream(stream: AsyncIterable<ResponseStream>) {
     const reader = stream.getReader();
     const decoder = new TextDecoder();
 
