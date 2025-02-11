@@ -505,7 +505,7 @@ export class ClaudeApi implements LLMApi {
   
       } else {
         // 非流式调用
-        const response = await client.invokeModel({
+        const res = await client.invokeModel({
           modelId: modelID,
           input: {
             anthropic_version: modelVersion,
