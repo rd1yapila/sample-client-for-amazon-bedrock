@@ -472,53 +472,51 @@ export class ClaudeApi implements LLMApi {
         };
 
         controller.signal.onabort = finish;
-
-        const payload: ConverseCommandInput = {
-          modelId: modelID,
-          ...(requestPayload.system ? { system: [{ text: requestPayload.system }] } : [{ text: "." }]),
-          messages: requestPayload.messages,
-          inferenceConfig: {
-            maxTokens: requestPayload.max_tokens,
-            temperature: requestPayload.temperature,
-            topP: requestPayload.top_p
-          }
-        }
-        // console.log(payload, ".............")
-        const response = await client.converseStream(payload);
-
+        
+        // 使用 Invoke 模式进行流式调用
         try {
-          // Send the command to the model and wait for the response
-          // Extract and print the streamed response text in real-time.
-          let result = ""
-          for await (const item of response.stream ?? []) {
-            if (item.contentBlockDelta) {
-              //console.log(item.contentBlockDelta.delta?.text);
-              remainText += item.contentBlockDelta.delta?.text
+          const stream = await client.invokeModelStream({
+            modelId: modelID,
+            input: {
+              anthropic_version: modelVersion,
+              messages: requestPayload.messages,
+              ...(requestPayload.system && { system: requestPayload.system }),
+              max_tokens: requestPayload.max_tokens,
+              temperature: requestPayload.temperature,
+              top_p: requestPayload.top_p,
+              stream: true
+            }
+          });
+  
+          for await (const chunk of stream) {
+            if (chunk.completion) {
+              remainText += chunk.completion;
+            }
+            if (chunk.usage) {
+              metrics = chunk.usage;
             }
           }
-          console.log("result:", remainText)
-          finish()
+          
+          finish();
         } catch (err) {
-          finish()
+          finish();
           console.log(`ERROR: Can't invoke '${modelID}'. Reason: ${err}`);
         }
-
-
+  
       } else {
-        // console.log("not streaming");
-
-        const payload: ConverseCommandInput = {
+        // 非流式调用
+        const response = await client.invokeModel({
           modelId: modelID,
-          ...(requestPayload.system ? { system: [{ text: requestPayload.system }] } : [{ text: "." }]),
-          messages: requestPayload.messages,
-          inferenceConfig: {
-            maxTokens: requestPayload.max_tokens,
+          input: {
+            anthropic_version: modelVersion,
+            messages: requestPayload.messages,
+            ...(requestPayload.system && { system: requestPayload.system }),
+            max_tokens: requestPayload.max_tokens,
             temperature: requestPayload.temperature,
-            topP: requestPayload.top_p
+            top_p: requestPayload.top_p
           }
-        }
-
-        const res = await client.converseModel(payload)
+        });
+  
         clearTimeout(requestTimeoutId);
 
         let message = "No message return";
