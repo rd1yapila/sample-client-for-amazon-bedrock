@@ -121,6 +121,11 @@ class BedrockClient {
     });
 
     const response = await this.client.send(command);
+    
+    if (!response.body) {
+      throw new Error('Response body is undefined');
+    }
+
     return this.processStream(response.body);
   }
 
