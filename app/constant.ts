@@ -168,6 +168,18 @@ export const DEFAULT_MODELS = [
       providerType: "aws",
     },
   },
+  {
+    name: "claude-4-opus",
+    available: true,
+    modelId: "anthropic.claude-opus-4-20250514-v1:0",
+    anthropic_version: "bedrock-2023-05-31",
+    displayName: "Claude 4 Opus",
+    provider: {
+      id: "aws",
+      providerName: "AWS",
+      providerType: "aws",
+    },
+  },
 ] as const;
 
 export const REASONING_MODEL = ["claude-3.7-sonnet"];
