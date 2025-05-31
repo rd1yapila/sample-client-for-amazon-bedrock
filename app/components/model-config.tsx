@@ -17,6 +17,9 @@ const MODEL_SPECIFIC_CONFIGS = {
   "claude-3.7-sonnet": {
     hasReasoning: true,
   },
+  "claude-4-opus": {
+    hasReasoning: true,
+  },
 };
 
 // 默认配置
