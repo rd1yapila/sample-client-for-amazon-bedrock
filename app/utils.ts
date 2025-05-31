@@ -306,7 +306,9 @@ export function isVisionModel(model: string, models?: any) {
     (model.includes("claude") && model.includes("3")) ||
     model.includes("Claude3") ||
     (model.includes("Claude") && model.includes("3")) ||
-    model.includes("claude-3")
+    model.includes("claude-3") ||
+    (model.includes("Claude") && model.includes("4")) ||
+    model.includes("claude-4")
   ) {
     return true;
   }
